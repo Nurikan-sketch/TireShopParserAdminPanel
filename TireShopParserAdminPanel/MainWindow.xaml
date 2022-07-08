@@ -1,0 +1,109 @@
+﻿<Window x:Class="TireShopParserAdminPanel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TireShopParserAdminPanel"
+        xmlns:localConverters="clr-namespace:TireShopParserAdminPanel.Converters"
+        xmlns:viewModels="clr-namespace:TireShopParserAdminPanel.ViewModels"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1000">
+    <Window.Resources>
+        <localConverters:TireRadiusTitleColorConverter x:Key="tireRadiusTitleConverter"></localConverters:TireRadiusTitleColorConverter>
+        <localConverters:BitmapImageConverter x:Key="urlBitmapConverter"></localConverters:BitmapImageConverter>
+        <localConverters:PriceColorConverter x:Key="priceColorConverter"></localConverters:PriceColorConverter>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="70*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*"></ColumnDefinition>
+            <ColumnDefinition Width="30*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Row="0" Height="20">
+            <MenuItem Header="File">
+                
+            </MenuItem>
+            <MenuItem Header="Parser">
+                <MenuItem Header="Parse..." Command="{Binding Path=ParseCommand}">
+                    
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label>Brand</Label>
+                <ComboBox Width="200" SelectedItem="{Binding Path=SelectedBrand}" ItemsSource="{Binding Path=Brands}"></ComboBox>
+                <Button Command="{Binding Path=TestCommand}" Margin="5 0 0 0" Width="50">Test</Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label>Search title</Label>
+                <TextBox Text="{Binding Path=FindTitle, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="172"></TextBox>
+                <Button Command="{Binding Path=FindCommand}" Margin="5 0 0 0" Width="50">Find</Button>
+            </StackPanel>
+        </StackPanel>
+        <DataGrid ItemsSource="{Binding Path=Products}" 
+                  SelectedItem="{Binding Path=SelectedProduct}" 
+                  Grid.Row="2" Grid.Column="0"
+                  AutoGenerateColumns="False" 
+                  SelectionMode="Single" 
+                  IsReadOnly="True"
+                  >
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="View" Command="{Binding Path=TestCommand}"></MenuItem>
+                    <Separator></Separator>
+                    <MenuItem Header="Edit"></MenuItem>
+                    <MenuItem Header="Delete"></MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Width="25"></DataGridCheckBoxColumn>
+                <DataGridTemplateColumn SortMemberPath="TireRadius">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Fill="{Binding Path=Title, Converter={StaticResource tireRadiusTitleConverter}}" Width="10" Height="10"></Rectangle>
+                                <TextBlock Text="{Binding Path=TireRadius}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Id" Binding="{Binding Path=SiteId}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Brand" Binding="{Binding Path=Brand}"></DataGridTextColumn>
+                <DataGridTemplateColumn Header="Price" SortMemberPath="Price">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock 
+                                    Foreground="{Binding Path=Price, Converter={StaticResource priceColorConverter}}"
+                                    Text="{Binding Path=Price}"></TextBlock>
+                                <TextBlock>UAH</TextBlock>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
+        <StackPanel Margin="5" Grid.Row="2" Grid.Column="1" DataContext="{Binding Path=SelectedProduct}">
+            <Label>Title</Label>
+            <TextBox TextWrapping="Wrap" Text="{Binding Path=Title}"></TextBox>
+            <Label>Price</Label>
+            <TextBox Text="{Binding Path=Price}"></TextBox>
+            <Label>Image</Label>
+            <Image Source="{Binding Path=ImageSrc, Converter={StaticResource urlBitmapConverter}}"></Image>
+            <DataGrid ItemsSource="{Binding Path=Specifications}"
+                      IsReadOnly="True" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="30*" Header="Specification" Binding="{Binding Path=Title}"></DataGridTextColumn>
+                    <DataGridTextColumn Width="80*" Header="Value" Binding="{Binding Path=Value}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+    </Grid>
+</Window>
